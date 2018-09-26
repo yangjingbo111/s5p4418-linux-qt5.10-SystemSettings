@@ -38,6 +38,50 @@ void AppManager::startApp(QString appname, bool running)
 
 }
 
+
+
+void AppManager::startSearchWifi()
+{
+    QString appname("/usr/sbin/wpa_cli");
+    QStringList arg1, arg2;
+    arg1 << "scan";
+    QProcess wpa_cli;
+    wpa_cli.start(appname, arg1, QIODevice::ReadWrite);
+    wpa_cli.waitForStarted();
+    wpa_cli.waitForReadyRead();
+
+    QString res = wpa_cli.readAll();
+    QStringList list = res.split("\n");
+    wpa_cli.waitForFinished();
+
+    foreach (QString e, list) {
+        qDebug()<<e;
+    }
+    arg2 << "scan_results";
+    wpa_cli.start(appname, arg2, QIODevice::ReadWrite);
+    wpa_cli.waitForStarted();
+    wpa_cli.waitForReadyRead();
+    res = wpa_cli.readAll();
+    list = res.split("\n");
+
+    struct WifiEntry wifinode;
+
+    foreach (QString e, list) {
+
+        if(e.contains("[")){
+//            qDebug()<<e;
+//            QStringList l = e.split("\t");
+//            foreach (QString i, l) {
+//                qDebug()<<i;
+//            }
+            emit searchResultChanged(e);
+        }
+
+    }
+//    emit searchResultChanged(res);
+    wpa_cli.waitForFinished();
+}
+
 void AppManager::appStarted()
 {
 

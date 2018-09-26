@@ -4,6 +4,8 @@ import QtQuick.Layouts 1.0
 import QtQuick.Controls 2.1
 import AppManager 1.0
 
+import "./js/Utils.js" as Utils
+
 Window {
     id: home
     visible: true
@@ -29,9 +31,26 @@ Window {
         }
     }
 
+
+
     Column{
+        id: settingslist
         spacing: 0
         width: parent.width
+        focus: true
+
+        Keys.onPressed: {
+            if(event.key === Utils.KEY_1){   //KEY 1, SELECT Data and Time
+
+            }
+            else if(event.key === Utils.KEY_2){   //KEY DOWN, SELECT THE DOWNSIDE ITEM
+                wifihome.visible = true
+                wifihome.forceActiveFocus()
+            }
+        } //end Keys.onPressed
+        Keys.onReleased: {
+
+        }// end Keys.onReleased
 
         Rectangle{
             width: parent.width
@@ -85,7 +104,8 @@ Window {
                     Layout.fillWidth: true
                     onClicked: {
                         console.log("connect wifi")
-                        appManager.startApp("/bin/sh", 1)
+//                        appManager.startApp("/bin/sh", 1)
+
                     }
                 }
 
@@ -103,4 +123,20 @@ Window {
         anchors.centerIn: parent
         text: qsTr("System Settings App")
     }
+
+
+    // wifi sub page
+    WifiHome {
+        id: wifihome
+        width: parent.width
+        height: parent.height
+
+        visible: false
+
+        onExit: {
+            wifihome.visible = false
+            settingslist.forceActiveFocus()
+        }
+    }
+    // end of wifi sub page
 }

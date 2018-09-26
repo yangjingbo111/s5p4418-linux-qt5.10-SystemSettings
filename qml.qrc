@@ -1,5 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
+        <file>WifiHome.qml</file>
+        <file>js/Utils.js</file>
     </qresource>
 </RCC>

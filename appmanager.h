@@ -3,6 +3,12 @@
 
 #include <QObject>
 
+typedef struct WifiEntry{
+    QString ssid;
+    int level;
+
+}WifiEntry;
+
 class AppManager : public QObject
 {
     Q_OBJECT
@@ -12,8 +18,10 @@ public:
 
     Q_INVOKABLE void startApp(QString appname);
     Q_INVOKABLE void startApp(QString appname, bool running);
+    Q_INVOKABLE void startSearchWifi();
 
 signals:
+    void searchResultChanged(QString res);
 
 public slots:
     void appStarted();
