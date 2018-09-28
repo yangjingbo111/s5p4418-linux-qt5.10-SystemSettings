@@ -46,6 +46,7 @@ Window {
             else if(event.key === Utils.KEY_2){   //KEY DOWN, SELECT THE DOWNSIDE ITEM
                 wifihome.visible = true
                 wifihome.forceActiveFocus()
+                wifihome.searchWifi.clicked()
             }
         } //end Keys.onPressed
         Keys.onReleased: {
