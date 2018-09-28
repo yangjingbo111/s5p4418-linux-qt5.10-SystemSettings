@@ -48,6 +48,9 @@ Window {
                 wifihome.forceActiveFocus()
                 wifihome.searchWifi.clicked()
             }
+            else if(event.key === Utils.KEY_BACK){
+                appManager.startApp("/opt/Launcher/bin/Launcher")
+            }
         } //end Keys.onPressed
         Keys.onReleased: {
 
