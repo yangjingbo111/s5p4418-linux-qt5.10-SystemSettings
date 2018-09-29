@@ -5,6 +5,9 @@ import QtQuick.Controls 2.1
 import AppManager 1.0
 
 import "./js/Utils.js" as Utils
+import "./content"
+import QtQuick.VirtualKeyboard 2.2
+import QtQuick.VirtualKeyboard.Settings 2.2
 
 Window {
     id: home
@@ -102,30 +105,63 @@ Window {
 
                     }
                 }
-                Button {
-                    text: "3. Connect Wifi"
-                    highlighted: true
-                    Layout.fillWidth: true
-                    onClicked: {
-                        console.log("connect wifi")
-//                        appManager.startApp("/bin/sh", 1)
-
-                    }
+                TextField {
+                    width: parent.width
+                    placeholderText: "One line field"
+                    enterKeyAction: EnterKeyAction.Next
+//                    onAccepted: passwordField.focus = true
                 }
 
             }
+
+
         }
         Rectangle{
             width: parent.width
             height: 20
             color: "Purple"
         }
-    }
 
-    Text {
-        id: name
-        anchors.centerIn: parent
-        text: qsTr("System Settings App")
+        InputPanel {
+            id: inputPanel
+            z: 89
+            y: home.height
+            anchors.left: parent.left
+            anchors.right: parent.right
+            states: State {
+                name: "visible"
+                /*  The visibility of the InputPanel can be bound to the Qt.inputMethod.visible property,
+                    but then the handwriting input panel and the keyboard input panel can be visible
+                    at the same time. Here the visibility is bound to InputPanel.active property instead,
+                    which allows the handwriting panel to control the visibility when necessary.
+                */
+                when: inputPanel.active
+                PropertyChanges {
+                    target: inputPanel
+                    y: home.height - inputPanel.height
+                }
+            }
+            transitions: Transition {
+                id: inputPanelTransition
+                from: ""
+                to: "visible"
+                reversible: true
+                enabled: !VirtualKeyboardSettings.fullScreenMode
+                ParallelAnimation {
+                    NumberAnimation {
+                        properties: "y"
+                        duration: 250
+                        easing.type: Easing.InOutQuad
+                    }
+                }
+            }
+            Binding {
+                target: InputContext
+                property: "animating"
+                value: inputPanelTransition.running
+            }
+
+        }
     }
 
 
