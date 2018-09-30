@@ -4,6 +4,6 @@
         <file>WifiHome.qml</file>
         <file>js/Utils.js</file>
         <file>WifiDelegate.qml</file>
-        <file>Keyboard.qml</file>
+        <file>content/TextField.qml</file>
     </qresource>
 </RCC>
