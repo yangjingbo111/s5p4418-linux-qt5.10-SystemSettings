@@ -10,6 +10,8 @@ Rectangle {
     height: parent.height
     color: "lightblue"
     property alias searchWifi: search
+    property string ipValue: ""
+    property string connectionStatusValue: ""
 
     signal exit()
 
@@ -26,6 +28,15 @@ Rectangle {
 
             }
             )
+        } // end onSearchResultChanged
+
+        onIpChanged: {
+            console.log("ip addr: ", ip)
+            root.ipValue = ip
+        } // end onIpChanged
+
+        onConnectionStatusChanged: {
+
         }
     }
 
@@ -89,7 +100,12 @@ Rectangle {
         if(pwdDialog.focus){
             console.log(event.key)
             if(event.key === Utils.KEY_CONFIRM){   //KEY 1, SELECT Data and Time
-
+                console.log("connecting wifi...", ssidLabel.text)
+                appManager.connectToWifi(ssidLabel.text)
+            }
+            if(event.key === Utils.KEY_DOT){   //KEY 1, SELECT Data and Time
+                console.log("connecting wifi...", ssidLabel.text)
+                appManager.getip()
             }
             else if(event.key === Utils.KEY_BACK){   //KEY BACK, back to system settings
                 pwdDialog.visible = false
@@ -155,7 +171,8 @@ Rectangle {
         z: 10   // higher than listview is ok[not be covered by listview when moved]
 
         Text {
-            text: qsTr("Wifi")
+            id: ipaddr
+            text: root.ipValue
             font.pixelSize: 24
             anchors.centerIn: parent
             color: "white"

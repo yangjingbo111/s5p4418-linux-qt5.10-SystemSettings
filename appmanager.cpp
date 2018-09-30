@@ -3,7 +3,9 @@
 #include <QApplication>
 #include <QDebug>
 
-#define WPA_CLI "/usr/sbin/wpa_cli"
+#define WPA_CLI         "/usr/sbin/wpa_cli"
+#define UDHCPC          "/sbin/udhcpc"
+#define IFCONFIG        "/sbin/ifconfig"
 
 AppManager::AppManager(QObject *parent) : QObject(parent)
 {
@@ -90,7 +92,7 @@ void AppManager::startSearchWifi()
 //    listNetworks();
 //    listNetworks_();
 //    qDebug().noquote()<< getNetworkId("GULF-PC")<<getNetworkId("HUAWEIP20Pro");
-    getCurrentNetworkStatus();
+//    getCurrentNetworkStatus();
 
 
 
@@ -98,12 +100,47 @@ void AppManager::startSearchWifi()
 
 void AppManager::connectToWifi(QString ssid)
 {
+    int networkid = getNetworkId(ssid);
+    qDebug().noquote()<<networkid;
+    selectNetwork(networkid);
 
+    enableNetwork(networkid);
+
+    dhcp();
 }
 
 void AppManager::connectToWifi(QString ssid, QString psk)
 {
 
+}
+
+void AppManager::getip()
+{
+    QProcess ifconfig;
+    QStringList arg;
+    arg << "wlan0";
+    ifconfig.setProgram(IFCONFIG);
+    ifconfig.setArguments(arg);
+
+    QObject::connect(&ifconfig, &QProcess::readyReadStandardError, [&ifconfig](){
+       qDebug()<<ifconfig.readAllStandardError();
+    });
+    QObject::connect(&ifconfig, &QProcess::readyReadStandardOutput, [&ifconfig, this](){
+        QString result = ifconfig.readAll();
+        QStringList list = result.split("\n");
+        foreach (QString e, list) {
+            if(e.contains("inet addr:")){
+                QString ip = e.split("Bcast").at(0).split(":").at(1).trimmed();
+
+                emit ipChanged(ip);
+            }
+
+        }
+
+    });
+
+    ifconfig.start();
+    ifconfig.waitForFinished();
 }
 
 QList<QMap<QString, int>> AppManager::listNetworks()
@@ -239,13 +276,86 @@ int AppManager::getNetworkId(QString ssid)
 
 void AppManager::selectNetwork(int networkid)
 {
+    QMap<QString, QString> status;
+    QProcess wpa_cli;
+    QStringList arg;
+    arg << "select_network"<<QString::number(networkid);
+    wpa_cli.setProgram(WPA_CLI);
+    wpa_cli.setArguments(arg);
+    wpa_cli.start();
+    wpa_cli.waitForStarted();
+    wpa_cli.waitForReadyRead();
+    QString res = wpa_cli.readAll();
+    QStringList list = res.split("\n");
+    wpa_cli.waitForFinished();
+
+    foreach (QString e, list) {
+        qDebug().noquote()<<e;
+        /*
+        network id / ssid / bssid / flags
+         0	GULF-PC	any	[CURRENT]
+        */
+    }
+
 
 }
 
 void AppManager::enableNetwork(int networkid)
 {
+    QMap<QString, QString> status;
+    QProcess wpa_cli;
+    QStringList arg;
+    arg << "enable_network"<<QString::number(networkid);
+    wpa_cli.setProgram(WPA_CLI);
+    wpa_cli.setArguments(arg);
+    wpa_cli.start();
+    wpa_cli.waitForStarted();
+    wpa_cli.waitForReadyRead();
+    QString res = wpa_cli.readAll();
+    QStringList list = res.split("\n");
+    wpa_cli.waitForFinished();
 
+    foreach (QString e, list) {
+        qDebug().noquote()<<e;
+        /*
+        network id / ssid / bssid / flags
+         0	GULF-PC	any	[CURRENT]
+        */
+    }
 }
+
+/**
+ * @brief AppManager::dhcp
+ * @details use udhcpc -iwlan0 to get dynamic ip address
+ */
+void AppManager::dhcp()
+{
+    QProcess udhcpc;
+    QStringList arg;
+    arg << "-iwlan0";
+    udhcpc.setProgram(UDHCPC);
+    udhcpc.setArguments(arg);
+    udhcpc.start();
+    udhcpc.waitForStarted();
+    udhcpc.waitForReadyRead();
+    QString res = udhcpc.readAll();
+    QStringList list = res.split("\n");
+
+    udhcpc.waitForFinished();
+
+    foreach (QString e, list) {
+        qDebug().noquote()<<e;
+        /*
+        network id / ssid / bssid / flags
+         0	GULF-PC	any	[CURRENT]
+        */
+    }
+}
+
+//void AppManager::getIp()
+//{
+
+//}
 
 // worked version
 //void AppManager::startSearchWifi()
