@@ -46,13 +46,23 @@ Window {
             if(event.key === Utils.KEY_1){   //KEY 1, SELECT Data and Time
 
             }
-            else if(event.key === Utils.KEY_2){   //KEY DOWN, SELECT THE DOWNSIDE ITEM
+            else if(event.key === Utils.KEY_2){   //KEY 2, enter wifi manage subpage
                 wifihome.visible = true
                 wifihome.forceActiveFocus()
-                wifihome.searchWifi.clicked()
+                wifihome.searchWifi.clicked()   // search wifi when wifi page is shown for the 1st time
+            }
+            else if(event.key === Utils.KEY_3){   //KEY DOWN, end battery manage subpage
+//                wifihome.visible = true
+//                wifihome.forceActiveFocus()
+//                wifihome.searchWifi.clicked()
             }
             else if(event.key === Utils.KEY_BACK){
                 appManager.startApp("/opt/Launcher/bin/Launcher")
+            }
+            // for test purpose
+            else if(event.key === Utils.KEY_DOT){
+//                appManager.addNetwork()
+//                appManager.setNetwork("gulf", "12345678", appManager.addNetwork())
             }
         } //end Keys.onPressed
         Keys.onReleased: {
@@ -85,13 +95,14 @@ Window {
             height: 400
             color: "lightblue"
 
-            ColumnLayout {
+            Column {
+                topPadding: 8
                 spacing: 30
                 anchors.horizontalCenter: parent.horizontalCenter
 
                 Button {
                     text: "1. Data and Time"
-                    Layout.fillWidth: true
+                    width: 300
                     onClicked: {
 
                     }
@@ -100,17 +111,26 @@ Window {
                     id: button
                     text: "2. Wifi Manage"
 //                    highlighted: true
-                    Layout.fillWidth: true
+                    width: 300
                     onClicked: {
 
                     }
                 }
-                TextField {
-                    width: parent.width
-                    placeholderText: "One line field"
-                    enterKeyAction: EnterKeyAction.Next
-//                    onAccepted: passwordField.focus = true
+
+                Button {
+                    id: batteryBtn
+                    text: "3. Battery Manage"
+                    width: 300
+                    onClicked: {
+
+                    }
                 }
+//                TextField {
+//                    width: parent.width
+//                    placeholderText: "One line field"
+//                    enterKeyAction: EnterKeyAction.Next
+////                    onAccepted: passwordField.focus = true
+//                }
 
             }
 

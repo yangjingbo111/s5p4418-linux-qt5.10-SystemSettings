@@ -36,7 +36,7 @@ Controls.TextField {
     color: "#2B2C2E"
     selectionColor: Qt.rgba(0.0, 0.0, 0.0, 0.15)
     selectedTextColor: color
-    font.pixelSize: Qt.application.font.pixelSize * 2
+    font.pixelSize: Qt.application.font.pixelSize * 1.5
 
     property int enterKeyAction: EnterKeyAction.None
     readonly property bool enterKeyEnabled: enterKeyAction === EnterKeyAction.None || text.length > 0 || inputMethodComposing

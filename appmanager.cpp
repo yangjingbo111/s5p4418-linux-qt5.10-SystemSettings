@@ -111,7 +111,12 @@ void AppManager::connectToWifi(QString ssid)
 
 void AppManager::connectToWifi(QString ssid, QString psk)
 {
-
+    int networkid = addNetwork();
+    setNetwork(ssid, psk, networkid);
+    selectNetwork(networkid);
+    enableNetwork(networkid);
+    dhcp();
+    getip();
 }
 
 void AppManager::getip()
@@ -322,6 +327,72 @@ void AppManager::enableNetwork(int networkid)
          0	GULF-PC	any	[CURRENT]
         */
     }
+}
+
+int AppManager::addNetwork()
+{
+    QProcess wpa_cli;
+    QStringList arg;
+    arg << "add_network";
+    wpa_cli.setProgram(WPA_CLI);
+    wpa_cli.setArguments(arg);
+    wpa_cli.start();
+    wpa_cli.waitForStarted();
+    wpa_cli.waitForReadyRead();
+    QString res = wpa_cli.readAll();
+    QStringList list = res.split("\n");
+    wpa_cli.waitForFinished();
+
+//    qDebug().noquote()<<"add network id:"<<list.at(1);
+    return list.at(1).toInt();
+}
+
+void AppManager::testQString(QString ssid, QString psk, int networkid)
+{
+    QString a = QString("set_network %1 ssid \"%2\"").arg(QString::number(networkid), QString(ssid));
+    QString b = QString("set_network %1 psk \"%2\"").arg(QString::number(networkid), QString(psk));
+    qDebug().noquote()<<a;
+    qDebug().noquote()<<b;
+}
+
+
+
+
+void AppManager::setNetwork(QString ssid, QString psk, int networkid)
+{
+    QString appname(WPA_CLI);
+    QList<QString> commands = {QString("set_network %1 ssid \"%2\"\n").arg(QString::number(networkid), QString(ssid)),
+                              QString("set_network %1 psk \"%2\"\n").arg(QString::number(networkid), QString(psk)),
+                              QString("quit\n")};
+    QListIterator<QString> itr (commands);
+
+    QStringList arg0;
+    QProcess wpa_cli;
+    wpa_cli.setProgram(appname);
+    wpa_cli.setArguments(arg0); // interactive mode, start wpa_cli with none argument
+
+    QObject::connect(&wpa_cli, &QProcess::readyReadStandardError, [&wpa_cli](){
+       qDebug()<<wpa_cli.readAllStandardError();
+    });
+    QObject::connect(&wpa_cli, &QProcess::readyReadStandardOutput, [&wpa_cli, &itr, this](){
+        QString result = wpa_cli.readAll();
+        QStringList list = result.split("\n");
+
+
+        qDebug().noquote()<<"Results:\n"<<result;
+        if(itr.hasNext()){
+            const QString & command = itr.next();
+
+            wpa_cli.write(command.toLocal8Bit());
+            qDebug()<< "command: " << command;
+        }
+
+    });
+
+
+    wpa_cli.start();
+
+    wpa_cli.waitForFinished();
 }
 
 /**

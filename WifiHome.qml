@@ -4,6 +4,11 @@ import QtQuick.Controls 2.2
 
 import AppManager 1.0
 import "./js/Utils.js" as Utils
+
+import "./content"
+import QtQuick.VirtualKeyboard 2.2
+import QtQuick.VirtualKeyboard.Settings 2.2
+
 Rectangle {
     id: root
     width: parent.width
@@ -24,7 +29,7 @@ Rectangle {
                  {
                 "ssid": l[4],
                 "level": l[2],
-                "connectionStatus": "unconnected"
+                "connectionStatus": ""
 
             }
             )
@@ -47,8 +52,16 @@ Rectangle {
         width: parent.width / 2
         height: parent.height / 2
         anchors.centerIn: parent
-
         color: "white"
+
+        signal exitPwdDialog()
+
+        onExitPwdDialog: {
+            root.focus = true
+            pwdDialog.visible = false
+            pwdInput.text = ""
+        } // end exit
+
         Column{
             spacing: 8
             topPadding: 16
@@ -68,6 +81,7 @@ Rectangle {
                 height: 48
 
                 TextField{
+                    id: pwdInput
                     anchors.centerIn: parent
                     placeholderText: "Enter password"
                 }
@@ -81,11 +95,29 @@ Rectangle {
                     spacing: 16
                     leftPadding: 16
                     rightPadding: 16
-                    Button{
-                        text: "Connect"
+                    Rectangle{
+                        id: confirmBtn
+                        width: 120
+                        height: 48
+                        radius: 4
+                        color: focus ? "gray":"lightgray"
+                        Text {
+                            anchors.centerIn: parent
+                            text: qsTr("Connect")
+                        }
+
+
                     }
-                    Button{
-                        text: "Cancel"
+                    Rectangle{
+                        id: cancelBtn
+                        width: 120
+                        height: 48
+                        radius: 4
+                        color: focus ? "gray":"lightgray"
+                        Text {
+                            anchors.centerIn: parent
+                            text: qsTr("Cancel")
+                        }
                     }
                 }
             }
@@ -94,7 +126,7 @@ Rectangle {
 
 
         }
-    }
+    }// end pwdDialog
 
     Keys.onPressed: {
         if(pwdDialog.focus){
@@ -109,7 +141,7 @@ Rectangle {
             }
             else if(event.key === Utils.KEY_BACK){   //KEY BACK, back to system settings
                 pwdDialog.visible = false
-                wifilist.forceActiveFocus()
+                wifihome.forceActiveFocus()
             }
             else if(event.key === Utils.KEY_MINUS){   //KEY MINUS, SEARCH WIFI!!!
 
@@ -123,13 +155,14 @@ Rectangle {
 
             }
         }
-        else{
+        else if(root.focus){
             if(event.key === Utils.KEY_CONFIRM){   //KEY 1, SELECT Data and Time
                 ssidLabel.text = wifilist.model.get(wifilist.currentIndex).ssid
     //            console.log(wifilist.model.get(wifilist.currentIndex).ssid)
                 pwdDialog.visible = true
                 wifilist.focus = false
                 pwdDialog.forceActiveFocus()
+                pwdInput.focus = true
             }
             else if(event.key === Utils.KEY_BACK){   //KEY BACK, back to system settings
                 exit()
@@ -147,8 +180,43 @@ Rectangle {
                 wifilist.incrementCurrentIndex()
 
             }
-        }
-
+        }// end if(root.focus)
+        else if(pwdInput.focus){
+            if(event.key === Utils.KEY_UP){
+                cancelBtn.focus = true
+            }
+            else if(event.key === Utils.KEY_DOWN){   //KEY DOWN, SELECT THE DOWNSIDE ITEM
+                confirmBtn.focus = true
+            }
+            else if(event.key === Utils.KEY_BACK){   //KEY BACK, back to system settings
+                pwdDialog.exitPwdDialog()
+            }
+        }// if(root.focus)
+        else if(confirmBtn.focus){
+            if(event.key === Utils.KEY_UP){
+                pwdInput.focus = true
+            }
+            else if(event.key === Utils.KEY_DOWN){   //KEY DOWN, SELECT THE DOWNSIDE ITEM
+                cancelBtn.focus = true
+            }
+            else if(event.key === Utils.KEY_BACK){   //KEY BACK, back to system settings
+                pwdDialog.exitPwdDialog()
+            }
+            else if(event.key === Utils.KEY_CONFIRM){   //KEY DOWN, SELECT THE DOWNSIDE ITEM
+                appManager.connectToWifi(ssidLabel.text, pwdInput.text)
+            }
+        }// if(confirmBtn.focus)
+        else if(cancelBtn.focus){
+            if(event.key === Utils.KEY_UP){
+                confirmBtn.focus = true
+            }
+            else if(event.key === Utils.KEY_DOWN){   //KEY DOWN, SELECT THE DOWNSIDE ITEM
+                pwdInput.focus = true
+            }
+            else if(event.key === Utils.KEY_BACK){   //KEY BACK, back to system settings
+                pwdDialog.exitPwdDialog()
+            }
+        }// if(cancelBtn.focus)
 
     } //end Keys.onPressed
     Keys.onReleased: {
@@ -267,6 +335,47 @@ Rectangle {
         focus: true
         highlightFollowsCurrentItem: true
         ScrollBar.vertical: ScrollBar{}
+    }// end ListView
+
+    InputPanel {
+        id: inputPanel
+        z: 89
+        y: root.height
+        anchors.left: parent.left
+        anchors.right: parent.right
+        states: State {
+            name: "visible"
+            /*  The visibility of the InputPanel can be bound to the Qt.inputMethod.visible property,
+                but then the handwriting input panel and the keyboard input panel can be visible
+                at the same time. Here the visibility is bound to InputPanel.active property instead,
+                which allows the handwriting panel to control the visibility when necessary.
+            */
+            when: inputPanel.active
+            PropertyChanges {
+                target: inputPanel
+                y: root.height - inputPanel.height
+            }
+        }
+        transitions: Transition {
+            id: inputPanelTransition
+            from: ""
+            to: "visible"
+            reversible: true
+            enabled: !VirtualKeyboardSettings.fullScreenMode
+            ParallelAnimation {
+                NumberAnimation {
+                    properties: "y"
+                    duration: 250
+                    easing.type: Easing.InOutQuad
+                }
+            }
+        }
+        Binding {
+            target: InputContext
+            property: "animating"
+            value: inputPanelTransition.running
+        }
+
     }
 
 }

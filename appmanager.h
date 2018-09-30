@@ -24,6 +24,9 @@ public:
     int getNetworkId(QString ssid);
     void selectNetwork(int networkid);
     void enableNetwork(int networkid);
+    Q_INVOKABLE int  addNetwork();
+    Q_INVOKABLE void  testQString(QString ssid, QString psk, int networkid);
+    Q_INVOKABLE void setNetwork(QString ssid, QString psk, int networkid);
 
     void dhcp();
 //    void getIp();
