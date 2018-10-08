@@ -52,9 +52,8 @@ Window {
                 wifihome.searchWifi.clicked()   // search wifi when wifi page is shown for the 1st time
             }
             else if(event.key === Utils.KEY_3){   //KEY DOWN, end battery manage subpage
-//                wifihome.visible = true
-//                wifihome.forceActiveFocus()
-//                wifihome.searchWifi.clicked()
+                batteryhome.visible = true
+                batteryhome.forceActiveFocus()
             }
             else if(event.key === Utils.KEY_BACK){
                 appManager.startApp("/opt/Launcher/bin/Launcher")
@@ -197,6 +196,19 @@ Window {
             wifihome.visible = false
             settingslist.forceActiveFocus()
         }
-    }
-    // end of wifi sub page
+    }// end of wifi sub page
+
+    // Battery sub page
+    BatteryHome {
+        id: batteryhome
+        width: parent.width
+        height: parent.height
+
+        visible: false
+
+        onExit: {
+            batteryhome.visible = false
+            settingslist.forceActiveFocus()
+        }
+    }// end of Battery sub page
 }

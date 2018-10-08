@@ -1,9 +1,10 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
-        <file>WifiHome.qml</file>
+        <file>BatteryHome.qml</file>
         <file>js/Utils.js</file>
         <file>WifiDelegate.qml</file>
         <file>content/TextField.qml</file>
+        <file>WifiHome.qml</file>
     </qresource>
 </RCC>

@@ -2,7 +2,7 @@
 #define APPMANAGER_H
 
 #include <QObject>
-
+#include <QFile>
 
 class AppManager : public QObject
 {
@@ -17,6 +17,12 @@ public:
     Q_INVOKABLE void connectToWifi(QString ssid);
     Q_INVOKABLE void connectToWifi(QString ssid, QString psk);
     Q_INVOKABLE void getip();
+    Q_INVOKABLE void getadc(int ch);
+    Q_INVOKABLE void writeHeader(QString filename);
+    Q_INVOKABLE void writeFooter(QString filename);
+    Q_INVOKABLE void downloadFileToUsbDisk(QString usbnode, QString srcfilename);
+    Q_INVOKABLE bool checkUsbDisk();
+    Q_INVOKABLE QString getUsbDiskNode();
 
     QList<QMap<QString, int>> listNetworks();
     QMap<QString, int> listNetworks_();
@@ -29,13 +35,15 @@ public:
     Q_INVOKABLE void setNetwork(QString ssid, QString psk, int networkid);
 
     void dhcp();
+
+    void saveAdcToFile(QString filename, QString val);
 //    void getIp();
 
 signals:
     void searchResultChanged(QString res);
     void ipChanged(QString ip);
     void connectionStatusChanged(); //1 connected; 0 unconnected
-
+    void adcReceived(QString val);
 public slots:
     void appStarted();
     void appGotError();

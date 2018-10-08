@@ -6,6 +6,11 @@
 #define WPA_CLI         "/usr/sbin/wpa_cli"
 #define UDHCPC          "/sbin/udhcpc"
 #define IFCONFIG        "/sbin/ifconfig"
+#define ADC_TEST        "/opt/adc_test"
+#define MOUNT           "/bin/mount"
+#define UMOUNT          "/bin/umount"
+#define CP              "/bin/cp"
+#define LS              "/bin/ls"
 
 AppManager::AppManager(QObject *parent) : QObject(parent)
 {
@@ -146,6 +151,38 @@ void AppManager::getip()
 
     ifconfig.start();
     ifconfig.waitForFinished();
+}
+
+void AppManager::getadc(int ch)
+{
+    QProcess adc_test;
+    QStringList arg;
+    arg << QString::number(ch);     // this is the adc channel argument
+    adc_test.setProgram(ADC_TEST);
+    adc_test.setArguments(arg);
+
+    QObject::connect(&adc_test, &QProcess::readyReadStandardError, [&adc_test](){
+       qDebug()<<adc_test.readAllStandardError();
+    });
+    QObject::connect(&adc_test, &QProcess::readyReadStandardOutput, [&adc_test, this](){
+        QString result = adc_test.readAll();
+        QStringList list = result.split("\n");
+        foreach (QString e, list) {
+            if(e.contains("=")){
+                QString adc_val = e.split("=").at(1);
+                qDebug().noquote()<<adc_val;
+                emit adcReceived(adc_val);     //emit adc value to qml world
+
+                // save to file
+                saveAdcToFile("/opt/battery.txt", adc_val);
+            }
+
+        }
+
+    });
+
+    adc_test.start();
+    adc_test.waitForFinished();
 }
 
 QList<QMap<QString, int>> AppManager::listNetworks()
@@ -421,6 +458,128 @@ void AppManager::dhcp()
          0	GULF-PC	any	[CURRENT]
         */
     }
+}
+
+void AppManager::writeHeader(QString filename)
+{
+    QFile file(filename);
+    if(!file.open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text)){
+        qDebug().noquote()<<filename<<"open failed";
+        return;
+    }
+
+    file.write("-----------------start-----------------\r\n");
+    file.close();
+}
+
+void AppManager::writeFooter(QString filename)
+{
+    QFile file(filename);
+    if(!file.open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text)){
+        qDebug().noquote()<<filename<<"open failed";
+        return;
+    }
+
+    file.write("-----------------stop-----------------\r\n");
+    file.close();
+}
+
+/**
+ * @brief AppManager::downloadFileToUsbDisk
+ * @param srcfilename
+ * @details usbdisk will be enumrate at /dev/sda1
+ */
+void AppManager::downloadFileToUsbDisk(QString usbnode, QString srcfilename)
+{
+//    qDebug().noquote()<<usbnode<<srcfilename;
+//    return;
+    //mount /dev/sdb1 (sometime /dev/sda1) to /mnt
+    QProcess mount;
+    QStringList arg;
+    arg << "/dev/"+usbnode<<"/mnt";     // this is the adc channel argument
+    mount.setProgram(MOUNT);
+    mount.setArguments(arg);
+
+    mount.start();
+    mount.waitForStarted();
+    mount.waitForFinished();
+
+    //download file to the root directory of usbdisk
+    QProcess cp;
+    QStringList arg1;
+    arg1 << srcfilename<<"/mnt/";
+    cp.setProgram(CP);
+    cp.setArguments(arg1);
+    cp.start();
+    cp.waitForStarted();
+    cp.waitForFinished();
+
+
+    //umount /mnt
+    QProcess umount;
+    QStringList arg2;
+    arg2 << "/mnt";
+    umount.setProgram(UMOUNT);
+    umount.setArguments(arg2);
+    umount.start();
+    umount.waitForStarted();
+    umount.waitForFinished();
+}
+
+
+bool AppManager::checkUsbDisk()
+{
+
+    //"No such file"
+}
+
+/**
+ * @brief AppManager::getUsbDiskNode
+ * @return /dev/sd*
+ */
+QString AppManager::getUsbDiskNode()
+{
+    QString res = "no usb";
+
+    QProcess ls;
+    QStringList arg;
+    arg << "/dev";
+    ls.setProgram(LS);
+    ls.setArguments(arg);
+
+    QObject::connect(&ls, &QProcess::readyReadStandardError, [&ls](){
+       qDebug()<<ls.readAllStandardError();
+    });
+    QObject::connect(&ls, &QProcess::readyReadStandardOutput, [&ls, this,&res](){
+        QString result = ls.readAll();
+        QStringList list = result.split("\n");
+        foreach (QString e, list) {
+            if(e.contains("sd")){
+                qDebug().noquote()<<e;
+                res = e;
+//                emit ipChanged(ip);
+            }
+
+        }
+
+    });
+
+    ls.start();
+    ls.waitForFinished();
+
+    return res;
+}
+
+void AppManager::saveAdcToFile(QString filename, QString val)
+{
+    QFile file(filename);
+    if(!file.open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text)){
+        qDebug().noquote()<<filename<<"open failed";
+        return;
+    }
+
+    file.write(val.toLatin1()+"\r\n");
+    file.close();
 }
 
 //void AppManager::getIp()
