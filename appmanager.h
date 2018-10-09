@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QFile>
+#include "networkwoker.h"
+#include <QThread>
 
 class AppManager : public QObject
 {
@@ -44,6 +46,8 @@ signals:
     void ipChanged(QString ip);
     void connectionStatusChanged(); //1 connected; 0 unconnected
     void adcReceived(QString val);
+    //signals passed to worker
+    void connectToWifiSignal(QString ssid, QString psk);
 public slots:
     void appStarted();
     void appGotError();
@@ -51,6 +55,10 @@ public slots:
 
 private:
     QPROCESSORDETECTION_H
+
+    QThread *m_thread;
+    NetworkWoker *m_networkWorker;
+
 };
 
 #endif // APPMANAGER_H

@@ -18,7 +18,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-    appmanager.cpp
+    appmanager.cpp \
+    networkwoker.cpp
 
 RESOURCES += qml.qrc
 
@@ -34,6 +35,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    appmanager.h
+    appmanager.h \
+    networkwoker.h \
+    micros.h
 
 DISTFILES +=

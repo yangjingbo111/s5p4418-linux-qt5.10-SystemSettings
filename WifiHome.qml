@@ -51,7 +51,8 @@ Rectangle {
         z: 11
         width: parent.width / 2
         height: parent.height / 2
-        anchors.centerIn: parent
+        anchors.top: head.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
         color: "white"
 
         signal exitPwdDialog()

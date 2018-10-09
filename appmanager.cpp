@@ -3,18 +3,20 @@
 #include <QApplication>
 #include <QDebug>
 
-#define WPA_CLI         "/usr/sbin/wpa_cli"
-#define UDHCPC          "/sbin/udhcpc"
-#define IFCONFIG        "/sbin/ifconfig"
-#define ADC_TEST        "/opt/adc_test"
-#define MOUNT           "/bin/mount"
-#define UMOUNT          "/bin/umount"
-#define CP              "/bin/cp"
-#define LS              "/bin/ls"
+#include "micros.h"
 
 AppManager::AppManager(QObject *parent) : QObject(parent)
 {
-//    connect()
+    m_thread = new QThread;
+    m_networkWorker = new NetworkWoker;
+    m_networkWorker->moveToThread(m_thread);
+
+    connect(this, SIGNAL(connectToWifiSignal(QString, QString)), m_networkWorker, SLOT(connectToWifi(QString, QString)), Qt::QueuedConnection);
+
+    connect(m_networkWorker, SIGNAL(ipChanged(QString)), this, SIGNAL(ipChanged(QString)), Qt::QueuedConnection);
+
+    m_thread->start();
+
 }
 
 AppManager::~AppManager()
@@ -116,12 +118,7 @@ void AppManager::connectToWifi(QString ssid)
 
 void AppManager::connectToWifi(QString ssid, QString psk)
 {
-    int networkid = addNetwork();
-    setNetwork(ssid, psk, networkid);
-    selectNetwork(networkid);
-    enableNetwork(networkid);
-    dhcp();
-    getip();
+    emit connectToWifiSignal(ssid, psk);
 }
 
 void AppManager::getip()
