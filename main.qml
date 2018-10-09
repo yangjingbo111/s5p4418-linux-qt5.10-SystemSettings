@@ -118,6 +118,7 @@ Window {
 
                 Button {
                     id: batteryBtn
+                    visible: false
                     text: "3. Battery Manage"
                     width: 300
                     onClicked: {
