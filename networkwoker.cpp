@@ -114,6 +114,29 @@ void NetworkWoker::enableNetwork(int networkid)
     }
 }
 
+void NetworkWoker::disconnectWifi()
+{
+    QProcess wpa_cli;
+    QStringList arg;
+    arg << "disconnect";
+    wpa_cli.setProgram(WPA_CLI);
+    wpa_cli.setArguments(arg);
+    wpa_cli.start();
+    wpa_cli.waitForStarted();
+    wpa_cli.waitForReadyRead();
+    QString res = wpa_cli.readAll();
+    QStringList list = res.split("\n");
+    wpa_cli.waitForFinished();
+
+    foreach (QString e, list) {
+        qDebug().noquote()<<e;
+        /*
+        network id / ssid / bssid / flags
+         0	GULF-PC	any	[CURRENT]
+        */
+    }
+}
+
 void NetworkWoker::dhcp()
 {
     QProcess udhcpc;
@@ -169,6 +192,7 @@ void NetworkWoker::getip()
 
 void NetworkWoker::connectToWifi(QString ssid, QString psk)
 {
+    disconnectWifi();
     int networkid = addNetwork();
     setNetwork(ssid, psk, networkid);
     selectNetwork(networkid);

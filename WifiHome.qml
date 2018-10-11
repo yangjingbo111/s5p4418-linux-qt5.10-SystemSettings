@@ -3,6 +3,7 @@ import QtQuick.Controls 2.2
 
 
 import AppManager 1.0
+import NetworkManager 1.0
 import "./js/Utils.js" as Utils
 
 import "./content"
@@ -35,15 +36,17 @@ Rectangle {
             )
         } // end onSearchResultChanged
 
-        onIpChanged: {
-            console.log("ip addr: ", ip)
-            root.ipValue = ip
-        } // end onIpChanged
+
 
         onConnectionStatusChanged: {
 
         }
-    }
+    }// end AppManager
+
+    NetworkManager{
+        id: networkManager
+
+    }// end NetworkManager
 
     Rectangle{
         id: pwdDialog
@@ -104,7 +107,7 @@ Rectangle {
                         color: focus ? "gray":"lightgray"
                         Text {
                             anchors.centerIn: parent
-                            text: qsTr("Connect")
+                            text: qsTr("保存")
                         }
 
 
@@ -117,7 +120,7 @@ Rectangle {
                         color: focus ? "gray":"lightgray"
                         Text {
                             anchors.centerIn: parent
-                            text: qsTr("Cancel")
+                            text: qsTr("取消")
                         }
                     }
                 }
@@ -204,7 +207,8 @@ Rectangle {
                 pwdDialog.exitPwdDialog()
             }
             else if(event.key === Utils.KEY_CONFIRM){   //KEY DOWN, SELECT THE DOWNSIDE ITEM
-                appManager.connectToWifi(ssidLabel.text, pwdInput.text)
+//                appManager.connectToWifi(ssidLabel.text, pwdInput.text)
+                networkManager.saveWifi(ssidLabel.text, pwdInput.text)
             }
         }// if(confirmBtn.focus)
         else if(cancelBtn.focus){
@@ -218,7 +222,7 @@ Rectangle {
                 pwdDialog.exitPwdDialog()
             }
         }// if(cancelBtn.focus)
-
+        event.accepted = true;  //important!! stop propagating event to others
     } //end Keys.onPressed
     Keys.onReleased: {
 

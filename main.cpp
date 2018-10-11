@@ -1,6 +1,8 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include "appmanager.h"
+#include "networkmanager.h"
+
 int main(int argc, char *argv[])
 {
     qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
@@ -13,6 +15,7 @@ int main(int argc, char *argv[])
      * @brief qmlRegisterType<AppManager>
      */
     qmlRegisterType<AppManager>("AppManager", 1, 0, "AppManager");
+    qmlRegisterType<NetworkManager>("NetworkManager", 1, 0, "NetworkManager");
 
 
     QQmlApplicationEngine engine;

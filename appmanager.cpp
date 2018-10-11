@@ -11,9 +11,7 @@ AppManager::AppManager(QObject *parent) : QObject(parent)
     m_networkWorker = new NetworkWoker;
     m_networkWorker->moveToThread(m_thread);
 
-    connect(this, SIGNAL(connectToWifiSignal(QString, QString)), m_networkWorker, SLOT(connectToWifi(QString, QString)), Qt::QueuedConnection);
 
-    connect(m_networkWorker, SIGNAL(ipChanged(QString)), this, SIGNAL(ipChanged(QString)), Qt::QueuedConnection);
 
     m_thread->start();
 
@@ -114,40 +112,6 @@ void AppManager::connectToWifi(QString ssid)
     enableNetwork(networkid);
 
     dhcp();
-}
-
-void AppManager::connectToWifi(QString ssid, QString psk)
-{
-    emit connectToWifiSignal(ssid, psk);
-}
-
-void AppManager::getip()
-{
-    QProcess ifconfig;
-    QStringList arg;
-    arg << "wlan0";
-    ifconfig.setProgram(IFCONFIG);
-    ifconfig.setArguments(arg);
-
-    QObject::connect(&ifconfig, &QProcess::readyReadStandardError, [&ifconfig](){
-       qDebug()<<ifconfig.readAllStandardError();
-    });
-    QObject::connect(&ifconfig, &QProcess::readyReadStandardOutput, [&ifconfig, this](){
-        QString result = ifconfig.readAll();
-        QStringList list = result.split("\n");
-        foreach (QString e, list) {
-            if(e.contains("inet addr:")){
-                QString ip = e.split("Bcast").at(0).split(":").at(1).trimmed();
-
-                emit ipChanged(ip);
-            }
-
-        }
-
-    });
-
-    ifconfig.start();
-    ifconfig.waitForFinished();
 }
 
 void AppManager::getadc(int ch)

@@ -12,6 +12,7 @@ public:
     void setNetwork(QString ssid, QString psk, int networkid);
     void selectNetwork(int networkid);
     void enableNetwork(int networkid);
+    void disconnectWifi();
     void dhcp();
     void getip();
 

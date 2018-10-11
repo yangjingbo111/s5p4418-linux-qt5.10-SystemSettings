@@ -17,8 +17,6 @@ public:
     Q_INVOKABLE void startApp(QString appname, bool running);
     Q_INVOKABLE void startSearchWifi();
     Q_INVOKABLE void connectToWifi(QString ssid);
-    Q_INVOKABLE void connectToWifi(QString ssid, QString psk);
-    Q_INVOKABLE void getip();
     Q_INVOKABLE void getadc(int ch);
     Q_INVOKABLE void writeHeader(QString filename);
     Q_INVOKABLE void writeFooter(QString filename);
@@ -43,11 +41,10 @@ public:
 
 signals:
     void searchResultChanged(QString res);
-    void ipChanged(QString ip);
+
     void connectionStatusChanged(); //1 connected; 0 unconnected
     void adcReceived(QString val);
-    //signals passed to worker
-    void connectToWifiSignal(QString ssid, QString psk);
+
 public slots:
     void appStarted();
     void appGotError();

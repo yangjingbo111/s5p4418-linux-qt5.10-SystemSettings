@@ -6,5 +6,6 @@
         <file>WifiDelegate.qml</file>
         <file>content/TextField.qml</file>
         <file>WifiHome.qml</file>
+        <file>NetworkHome.qml</file>
     </qresource>
 </RCC>

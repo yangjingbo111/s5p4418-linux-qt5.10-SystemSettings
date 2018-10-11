@@ -47,9 +47,12 @@ Window {
 
             }
             else if(event.key === Utils.KEY_2){   //KEY 2, enter wifi manage subpage
-                wifihome.visible = true
-                wifihome.forceActiveFocus()
-                wifihome.searchWifi.clicked()   // search wifi when wifi page is shown for the 1st time
+//                wifihome.visible = true
+//                wifihome.forceActiveFocus()
+//                wifihome.searchWifi.clicked()   // search wifi when wifi page is shown for the 1st time
+                networkHome.visible = true
+                networkHome.forceActiveFocus()
+
             }
             else if(event.key === Utils.KEY_3){   //KEY DOWN, end battery manage subpage
                 batteryhome.visible = true
@@ -184,20 +187,34 @@ Window {
         }
     }
 
-
-    // wifi sub page
-    WifiHome {
-        id: wifihome
+    // NetworkHome sub page
+    NetworkHome {
+        id: networkHome
         width: parent.width
         height: parent.height
 
         visible: false
 
         onExit: {
-            wifihome.visible = false
+            networkHome.visible = false
             settingslist.forceActiveFocus()
+
         }
-    }// end of wifi sub page
+    }//end NetworkHome sub page
+
+    // wifi sub page
+//    WifiHome {
+//        id: wifihome
+//        width: parent.width
+//        height: parent.height
+
+//        visible: false
+
+//        onExit: {
+//            wifihome.visible = false
+//            settingslist.forceActiveFocus()
+//        }
+//    }// end of wifi sub page
 
     // Battery sub page
     BatteryHome {
