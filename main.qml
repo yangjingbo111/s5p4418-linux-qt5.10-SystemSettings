@@ -115,7 +115,8 @@ Window {
 //                    highlighted: true
                     width: 300
                     onClicked: {
-
+                        networkHome.visible = true
+                        networkHome.forceActiveFocus()
                     }
                 }
 

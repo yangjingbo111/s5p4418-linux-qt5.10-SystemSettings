@@ -11,5 +11,8 @@
 #define UMOUNT          "/bin/umount"
 #define CP              "/bin/cp"
 #define LS              "/bin/ls"
+#define PS              "/bin/ps"
+#define GREP            "/bin/grep"
+#define KILL            "/bin/kill"
 
 #endif // MICROS_H

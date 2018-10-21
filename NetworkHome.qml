@@ -33,6 +33,7 @@ Rectangle {
         }
         onIpChanged: {
             console.log("ip addr: ", ip)
+            connectionStatus.text = "已连接"
             ipvalue.text = ip
         } // end onIpChanged
 
@@ -100,6 +101,10 @@ Rectangle {
                     console.log("begin update wifi list")
                     networkManager.updateWifiList()
                 }
+
+                onCurrentTextChanged: {
+
+                }
             }
         }//end 网络名称
         Item{
@@ -143,10 +148,11 @@ Rectangle {
                                 text: qsTr("状态：")
                             }
                             Text {
+                                id: connectionStatus
                                 anchors.rightMargin: 8
                                 width: 400
                                 anchors.right: parent.right
-                                text: qsTr("no signal")
+                                text: qsTr("未连接")
                             }
                         }
 
@@ -163,7 +169,7 @@ Rectangle {
                                 anchors.rightMargin: 8
                                 width: 400
                                 anchors.right: parent.right
-                                text: qsTr("no ")
+                                text: networkName.currentText
                             }
                         }
 
@@ -181,7 +187,7 @@ Rectangle {
                                 anchors.rightMargin: 8
                                 width: 400
                                 anchors.right: parent.right
-                                text: qsTr("no signal")
+                                text: qsTr("")
                             }
                         }
 
@@ -199,12 +205,19 @@ Rectangle {
                                     onClicked: {
                                         console.log("networkName", networkName.currentText)
                                         ipvalue.text = ""   //clear ip value
+                                        connectionStatus.text = "正在连接..."
                                         networkManager.connectToWifi(networkName.currentText)
                                     }
                                 }
                                 Button {
                                     id: disconnectbtn
                                     text: qsTr("断开")
+                                    onClicked: {
+                                        connectionStatus.text = "未连接"
+                                        ipvalue.text = ""   //clear ip value
+                                        networkManager.disconnectWifi()
+
+                                    }
                                 }
                                 Button {
                                     id: scanbtn
@@ -219,7 +232,7 @@ Rectangle {
 
 
                         }
-                    }
+                    }// end Column
                 }
                 Rectangle {
                     id: manageTab
@@ -227,7 +240,90 @@ Rectangle {
                     width: parent.width
                     height: 300
                     color: "white"
+                    Column{
+                        width: parent.width
+                        topPadding: 32
+                        spacing: 8
+                        Item{
+                            width: parent.width
+                            height: 48
 
+//                            Text {
+//                                anchors.leftMargin: 8
+//                                font.pixelSize: 28
+//                                text: qsTr("状态：")
+//                            }
+//                            Text {
+//                                id: connectionStatus
+//                                anchors.rightMargin: 8
+//                                width: 400
+//                                anchors.right: parent.right
+//                                text: qsTr("未连接")
+//                            }
+                        }
+
+                        Item{
+                            width: parent.width
+                            height: 48
+
+                            Text {
+                                anchors.leftMargin: 8
+                                font.pixelSize: 28
+                                text: qsTr("网络名：")
+                            }
+                            Text {
+                                anchors.rightMargin: 8
+                                width: 400
+                                anchors.right: parent.right
+                                text: networkName.currentText
+                            }
+                        }
+
+                        Item{
+                            width: parent.width
+                            height: 48
+
+//                            Text {
+//                                anchors.leftMargin: 8
+//                                font.pixelSize: 28
+//                                text: qsTr("IP地址：")
+//                            }
+//                            Text {
+//                                id: ipvalue
+//                                anchors.rightMargin: 8
+//                                width: 400
+//                                anchors.right: parent.right
+//                                text: qsTr("")
+//                            }
+                        }
+
+                        Item{
+                            width: parent.width
+                            height: 60
+                            Row{
+                                anchors.centerIn: parent
+                                width: parent.width / 2
+                                height: parent.height
+                                spacing: 8
+                                Button {
+                                    // placeholder
+                                    visible: false
+                                }
+                                Button {
+                                    id: deleteBtn
+                                    text: qsTr("删除")
+                                    onClicked: {
+                                        networkManager.removeWifi(networkName.currentText)
+                                        wifimodel.clear()   // clear first!!!
+                                        networkManager.updateWifiList()
+                                    }
+                                }
+
+                            }
+
+
+                        }
+                    }// end Column
                 }
 
             }
@@ -246,6 +342,10 @@ Rectangle {
             wifihome.visible = false
             root.forceActiveFocus()
 
+        }
+        onUpdateWifiList: {
+            wifimodel.clear()   // clear first!!!
+            networkManager.updateWifiList()
         }
     }// end of wifi sub page
 

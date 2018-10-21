@@ -20,6 +20,7 @@ Rectangle {
     property string connectionStatusValue: ""
 
     signal exit()
+    signal updateWifiList()
 
     AppManager{
         id: appManager
@@ -37,10 +38,6 @@ Rectangle {
         } // end onSearchResultChanged
 
 
-
-        onConnectionStatusChanged: {
-
-        }
     }// end AppManager
 
     NetworkManager{
@@ -139,10 +136,6 @@ Rectangle {
                 console.log("connecting wifi...", ssidLabel.text)
                 appManager.connectToWifi(ssidLabel.text)
             }
-            if(event.key === Utils.KEY_DOT){   //KEY 1, SELECT Data and Time
-                console.log("connecting wifi...", ssidLabel.text)
-                appManager.getip()
-            }
             else if(event.key === Utils.KEY_BACK){   //KEY BACK, back to system settings
                 pwdDialog.visible = false
                 wifihome.forceActiveFocus()
@@ -208,7 +201,9 @@ Rectangle {
             }
             else if(event.key === Utils.KEY_CONFIRM){   //KEY DOWN, SELECT THE DOWNSIDE ITEM
 //                appManager.connectToWifi(ssidLabel.text, pwdInput.text)
-                networkManager.saveWifi(ssidLabel.text, pwdInput.text)
+                networkManager.saveWifi(ssidLabel.text, pwdInput.text) // this is a blocking function
+                updateWifiList()    // when save new wifi info, update wifi list[here is just a signal]
+
             }
         }// if(confirmBtn.focus)
         else if(cancelBtn.focus){
@@ -255,11 +250,12 @@ Rectangle {
             id: search
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
-            text: qsTr("Search")
+            text: qsTr("扫描")
 
             onClicked: {
                 model_contact.clear()
                 appManager.startSearchWifi()
+                wifihome.forceActiveFocus()
 //                console.log("clicked fired")
             }
         }
@@ -292,7 +288,7 @@ Rectangle {
                         Text{
                             id: ssid
                             anchors.centerIn: parent
-                            text: "SSID"
+                            text: "网络名"
 //                            color: "white"
                         }
                     }
@@ -303,7 +299,7 @@ Rectangle {
                         Text{
                             id: level
                             anchors.centerIn: parent
-                            text: "Level"
+                            text: "信号强度"
 //                            color: "white"
                         }
                     }
@@ -311,12 +307,12 @@ Rectangle {
                         id: statusHeader
                         height: headerRect.height
                         width: 200
-                        Text{
-                            id: status
-                            anchors.centerIn: parent
-                            text: "Status"
-//                            color: "white"
-                        }
+//                        Text{
+//                            id: status
+//                            anchors.centerIn: parent
+//                            text: "Status"
+////                            color: "white"
+//                        }
                     }
                 }
             }

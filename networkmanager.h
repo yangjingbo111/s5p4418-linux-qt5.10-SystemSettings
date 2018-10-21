@@ -11,14 +11,17 @@ class NetworkManager : public QObject
 public:
     explicit NetworkManager(QObject *parent = nullptr);
     Q_INVOKABLE bool saveWifi(QString ssid, QString psk);
+    Q_INVOKABLE bool removeWifi(QString ssid);
     Q_INVOKABLE void updateWifiList();
     Q_INVOKABLE void connectToWifi(QString ssid, QString psk);
     Q_INVOKABLE void connectToWifi(QString ssid);
+    Q_INVOKABLE void disconnectWifi();
 
 signals:
     void ipChanged(QString ip);
     //signals passed to worker
     void connectToWifiSignal(QString ssid, QString psk);
+    void disconnectWifiSignal();
     void wifiListUpdate(QString ssid);
 public slots:
 

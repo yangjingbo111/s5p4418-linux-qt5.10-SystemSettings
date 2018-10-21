@@ -114,6 +114,36 @@ void NetworkWoker::enableNetwork(int networkid)
     }
 }
 
+/**
+ * @brief NetworkWoker::getPid
+ * @param process here process is just a substring without path
+ * @return
+ */
+int NetworkWoker::getPid(QString process)
+{
+    QProcess ps;
+    QStringList arg;
+    arg << "";
+    ps.setProgram(PS);
+    ps.setArguments(arg);
+    ps.start();
+    ps.waitForStarted();
+    ps.waitForReadyRead();
+    QString res = ps.readAll();
+    QStringList list = res.split("\n");
+    ps.waitForFinished();
+
+    foreach (QString e, list) {
+//        qDebug().noquote()<<e;
+        if(e.contains(process)){
+            QString pid = e.split("root").at(0).trimmed();
+            qDebug().noquote()<<e<<pid;
+            return pid.toInt();
+        }
+    }
+    return -1;// wrong pid
+}
+
 void NetworkWoker::disconnectWifi()
 {
     QProcess wpa_cli;
@@ -135,6 +165,11 @@ void NetworkWoker::disconnectWifi()
          0	GULF-PC	any	[CURRENT]
         */
     }
+
+    while (getPid("udhcpc") != -1) {
+        killProcess(getPid("udhcpc"));
+    }
+
 }
 
 void NetworkWoker::dhcp()
@@ -188,6 +223,30 @@ void NetworkWoker::getip()
 
     ifconfig.start();
     ifconfig.waitForFinished();
+}
+
+void NetworkWoker::killProcess(int pid)
+{
+    QProcess kill;
+    QStringList arg;
+    arg << QString::number(pid);
+    kill.setProgram(KILL);
+    kill.setArguments(arg);
+    kill.start();
+    kill.waitForStarted();
+    kill.waitForReadyRead();
+    QString res = kill.readAll();
+    QStringList list = res.split("\n");
+
+    kill.waitForFinished();
+
+    foreach (QString e, list) {
+        qDebug().noquote()<<e;
+        /*
+        network id / ssid / bssid / flags
+         0	GULF-PC	any	[CURRENT]
+        */
+    }
 }
 
 void NetworkWoker::connectToWifi(QString ssid, QString psk)

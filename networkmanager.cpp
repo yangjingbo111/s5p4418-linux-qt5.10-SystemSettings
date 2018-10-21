@@ -9,6 +9,7 @@ NetworkManager::NetworkManager(QObject *parent) : QObject(parent)
     m_networkWorker->moveToThread(m_thread);
 
     connect(this, SIGNAL(connectToWifiSignal(QString, QString)), m_networkWorker, SLOT(connectToWifi(QString, QString)), Qt::QueuedConnection);
+    connect(this, SIGNAL(disconnectWifiSignal()), m_networkWorker, SLOT(disconnectWifi()), Qt::QueuedConnection);
 
     connect(m_networkWorker, SIGNAL(ipChanged(QString)), this, SIGNAL(ipChanged(QString)), Qt::QueuedConnection);
 
@@ -21,6 +22,17 @@ bool NetworkManager::saveWifi(QString ssid, QString psk)
     QSettings wifi;
     wifi.setValue(ssid, psk);
     qDebug().noquote()<<wifi.value(ssid);
+
+    return true;
+}
+
+bool NetworkManager::removeWifi(QString ssid)
+{
+    QSettings wifi;
+    wifi.remove(ssid);
+//    qDebug().noquote()<<wifi.value(ssid);
+
+
     return true;
 }
 
@@ -46,4 +58,9 @@ void NetworkManager::connectToWifi(QString ssid)
     QVariant psk = wifi.value(ssid, QVariant(QString("wrong psk")));
     qDebug().noquote()<<ssid<<psk.toString();
     emit connectToWifiSignal(ssid, psk.toString());
+}
+
+void NetworkManager::disconnectWifi()
+{
+    emit disconnectWifiSignal();
 }
