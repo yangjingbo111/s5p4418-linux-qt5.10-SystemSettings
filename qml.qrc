@@ -7,5 +7,6 @@
         <file>content/TextField.qml</file>
         <file>WifiHome.qml</file>
         <file>NetworkHome.qml</file>
+        <file>LightnessHome.qml</file>
     </qresource>
 </RCC>

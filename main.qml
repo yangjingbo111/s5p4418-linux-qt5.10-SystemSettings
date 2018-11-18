@@ -103,7 +103,7 @@ Window {
                 anchors.horizontalCenter: parent.horizontalCenter
 
                 Button {
-                    text: "1. Data and Time"
+                    text: "1. 日期和时间"
                     width: 300
                     onClicked: {
 
@@ -111,7 +111,7 @@ Window {
                 }
                 Button {
                     id: button
-                    text: "2. Wifi Manage"
+                    text: "2. Wifi 管理"
 //                    highlighted: true
                     width: 300
                     onClicked: {
@@ -121,12 +121,12 @@ Window {
                 }
 
                 Button {
-                    id: batteryBtn
-                    visible: false
-                    text: "3. Battery Manage"
+                    id: lightBtn
+                    text: "3. 屏幕亮度"
                     width: 300
                     onClicked: {
-
+                        lightnessHome.visible = true
+                        lightnessHome.forceActiveFocus()
                     }
                 }
 //                TextField {
@@ -198,6 +198,21 @@ Window {
 
         onExit: {
             networkHome.visible = false
+            settingslist.forceActiveFocus()
+
+        }
+    }//end NetworkHome sub page
+
+    // LightnessHome sub page
+    LightnessHome {
+        id: lightnessHome
+        width: parent.width
+        height: parent.height
+
+        visible: false
+
+        onExit: {
+            lightnessHome.visible = false
             settingslist.forceActiveFocus()
 
         }
