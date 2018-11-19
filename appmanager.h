@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QFile>
 #include "networkwoker.h"
+#include "lightnessworker.h"
 #include <QThread>
 
 class AppManager : public QObject
@@ -31,9 +32,10 @@ public:
     void selectNetwork(int networkid);
     void enableNetwork(int networkid);
     Q_INVOKABLE int  addNetwork();
-    Q_INVOKABLE void  testQString(QString ssid, QString psk, int networkid);
+    Q_INVOKABLE void testQString(QString ssid, QString psk, int networkid);
     Q_INVOKABLE void setNetwork(QString ssid, QString psk, int networkid);
-
+    Q_INVOKABLE void setLightness(int light);
+    Q_INVOKABLE int getLightness();
     void dhcp();
 
     void saveAdcToFile(QString filename, QString val);
@@ -44,6 +46,7 @@ signals:
 
     void connectionStatusChanged(); //1 connected; 0 unconnected
     void adcReceived(QString val);
+    void setLightnessSignal(int light);
 
 public slots:
     void appStarted();
@@ -55,7 +58,7 @@ private:
 
     QThread *m_thread;
     NetworkWoker *m_networkWorker;
-
+    LightnessWorker *m_lightnessWorker;
 };
 
 #endif // APPMANAGER_H

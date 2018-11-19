@@ -2,6 +2,7 @@
 #include <QProcess>
 #include <QApplication>
 #include <QDebug>
+#include <QFile>
 
 #include "micros.h"
 
@@ -11,7 +12,10 @@ AppManager::AppManager(QObject *parent) : QObject(parent)
     m_networkWorker = new NetworkWoker;
     m_networkWorker->moveToThread(m_thread);
 
+    m_lightnessWorker = new LightnessWorker;
+    m_lightnessWorker->moveToThread(m_thread);
 
+    connect(this, SIGNAL(setLightnessSignal(int)), m_lightnessWorker, SLOT(setLightness(int)), Qt::QueuedConnection);
 
     m_thread->start();
 
@@ -391,6 +395,27 @@ void AppManager::setNetwork(QString ssid, QString psk, int networkid)
     wpa_cli.start();
 
     wpa_cli.waitForFinished();
+}
+
+void AppManager::setLightness(int light)
+{
+    emit setLightnessSignal(light);
+}
+
+int AppManager::getLightness()
+{
+    int light = 50;
+    QFile file(LIGHT_CONFIG_FILE);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return 50;
+
+    QTextStream in(&file);
+    while (!in.atEnd()) {
+        QString line = in.readLine();
+        light = line.toInt();
+    }
+    file.close();
+    return light;
 }
 
 /**

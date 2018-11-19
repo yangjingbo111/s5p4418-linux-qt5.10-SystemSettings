@@ -20,7 +20,8 @@ SOURCES += \
         main.cpp \
     appmanager.cpp \
     networkwoker.cpp \
-    networkmanager.cpp
+    networkmanager.cpp \
+    lightnessworker.cpp
 
 RESOURCES += qml.qrc
 
@@ -39,6 +40,7 @@ HEADERS += \
     appmanager.h \
     networkwoker.h \
     micros.h \
-    networkmanager.h
+    networkmanager.h \
+    lightnessworker.h
 
 DISTFILES +=

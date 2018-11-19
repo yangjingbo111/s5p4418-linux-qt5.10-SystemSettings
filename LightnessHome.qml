@@ -12,7 +12,7 @@ Rectangle {
     height: parent.height
     color: "lightblue"
 
-    property int lightness: 10
+//    property int lightness: 25
 
     signal exit()
 
@@ -60,14 +60,21 @@ Rectangle {
             height: 48
 
             Slider{
+                id: light_slider
                 width: parent.width / 2
                 anchors.horizontalCenter: parent.horizontalCenter
-                from: 10
-                to: 100
+                from: 25
+                value: 25   // set "value" equals "from", valueChanged will not triggered
+                to: 255
                 onValueChanged: {
-                    lightness = Math.round(value)
-                    console.log("------------", lightness)
+//                    lightness = Math.round(value)
+                    appManager.setLightness(Math.round(value))
+//                    console.log("------------", lightness)
                 }
+            }
+            Component.onCompleted: {
+                light_slider.value = appManager.getLightness()
+                console.log('---------- init slider', light_slider.value)
             }
 
         }//end 滑动条
