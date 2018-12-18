@@ -55,8 +55,8 @@ Window {
 
             }
             else if(event.key === Utils.KEY_3){   //KEY DOWN, end battery manage subpage
-                batteryhome.visible = true
-                batteryhome.forceActiveFocus()
+                lightnessHome.visible = true
+                lightnessHome.forceActiveFocus()
             }
             else if(event.key === Utils.KEY_BACK){
                 appManager.startApp("/opt/Launcher/bin/Launcher")
