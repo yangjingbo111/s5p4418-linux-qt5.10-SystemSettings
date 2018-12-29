@@ -72,7 +72,7 @@ void AppManager::startSearchWifi()
         foreach (QString e, list) {
 
             if(e.contains("[")){
-    //            qDebug()<<e;
+                qDebug()<<e;
     //            QStringList l = e.split("\t");
     //            foreach (QString i, l) {
     //                qDebug()<<i;

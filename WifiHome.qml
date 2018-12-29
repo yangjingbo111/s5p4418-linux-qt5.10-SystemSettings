@@ -27,6 +27,7 @@ Rectangle {
 
         onSearchResultChanged: {
             var l = res.split("\t")
+            console.log("new wifi append..."+l[4])
             model_contact.append(
                  {
                 "ssid": l[4],
@@ -256,7 +257,7 @@ Rectangle {
                 model_contact.clear()
                 appManager.startSearchWifi()
                 wifihome.forceActiveFocus()
-//                console.log("clicked fired")
+                console.log("search wifi clicked fired")
             }
         }
 

@@ -52,6 +52,7 @@ Window {
 //                wifihome.searchWifi.clicked()   // search wifi when wifi page is shown for the 1st time
                 networkHome.visible = true
                 networkHome.forceActiveFocus()
+                appManager.startSearchWifi()    // IMPORTANT!! First scan has no result.
 
             }
             else if(event.key === Utils.KEY_3){   //KEY DOWN, end battery manage subpage
